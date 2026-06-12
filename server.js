@@ -8,6 +8,7 @@ import { listarCategorias } from './controllers/categoryController.js';
 import { listarProdutosOficiais, obterMeuAlbum, adicionarProdutoAoAlbum } from './controllers/productController.js';
 import { proporTroca, listarMercadoDeTrocas } from './controllers/tradeController.js';
 import { verificarToken } from './middleware/authMiddleware.js';
+import { listarProdutosOficiais, obterMeuAlbum, adicionarProdutoAoAlbum, removerProdutoDoAlbum } from './controllers/productController.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.get('/api/categorias', verificarToken, listarCategorias);
 app.get('/api/produtos', verificarToken, listarProdutosOficiais);
 app.get('/api/meu-album', verificarToken, obterMeuAlbum);
 app.post('/api/meu-album/adicionar', verificarToken, adicionarProdutoAoAlbum);
+app.post('/api/meu-album/remover', verificarToken, removerProdutoDoAlbum);
 
 // --- ROTAS DO SISTEMA DE TROCAS ---
 app.post('/api/trocas/propor', verificarToken, proporTroca);

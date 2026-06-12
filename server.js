@@ -5,10 +5,14 @@ import dotenv from 'dotenv';
 // Importação de Controllers e Middlewares
 import { registrar, login } from './controllers/authController.js';
 import { listarCategorias } from './controllers/categoryController.js';
-import { listarProdutosOficiais, obterMeuAlbum, adicionarProdutoAoAlbum } from './controllers/productController.js';
+import { 
+    listarProdutosOficiais, 
+    obterMeuAlbum, 
+    adicionarProdutoAoAlbum,
+    removerProdutoDoAlbum   // <-- ADICIONE ESTA LINHA
+} from './controllers/productController.js';
 import { proporTroca, listarMercadoDeTrocas } from './controllers/tradeController.js';
 import { verificarToken } from './middleware/authMiddleware.js';
-
 
 dotenv.config();
 
@@ -32,9 +36,11 @@ app.post('/api/auth/login', login);
 app.get('/api/categorias', verificarToken, listarCategorias);
 
 // --- ROTAS DE PRODUTOS (JOGADORES / ÁLBUM) ---
+// --- ROTAS DE PRODUTOS (JOGADORES / ÁLBUM) ---
 app.get('/api/produtos', verificarToken, listarProdutosOficiais);
 app.get('/api/meu-album', verificarToken, obterMeuAlbum);
 app.post('/api/meu-album/adicionar', verificarToken, adicionarProdutoAoAlbum);
+app.post('/api/meu-album/remover', verificarToken, removerProdutoDoAlbum);  // <-- ADICIONE ESTA LINHA
 
 
 // --- ROTAS DO SISTEMA DE TROCAS ---

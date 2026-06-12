@@ -83,4 +83,57 @@ export const adicionarProdutoAoAlbum = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+// Remover um produto (desmarcar figurinha) do inventário do usuário
+export const removerProdutoDoAlbum = async (req, res) => {
+    const usuarioId = req.usuario.id;
+    const { produtoId } = req.body;
 
+    if (!produtoId) {
+        return res.status(400).json({ error: 'ID do produto não fornecido.' });
+    }
+
+    try {
+        // Verificar se o usuário realmente possui essa figurinha no inventário
+        const { data: itemExistente, error: findError } = await supabase
+            .from('inventario')
+            .select('*')
+            .eq('usuario_id', usuarioId)
+            .eq('produto_id', produtoId)
+            .single();
+
+        if (findError || !itemExistente) {
+            return res.status(404).json({ error: 'Você não possui essa figurinha no seu inventário.' });
+        }
+
+        if (itemExistente.quantidade > 1) {
+            // Se possui mais de uma unidade (repetida), apenas diminui a quantidade
+            const { data, error } = await supabase
+                .from('inventario')
+                .update({ quantidade: itemExistente.quantidade - 1 })
+                .eq('id', itemExistente.id)
+                .select();
+            
+            if (error) throw error;
+            return res.status(200).json({ 
+                message: `Figurinha removida! Agora você tem ${itemExistente.quantidade - 1} unidade(s) desta figurinha.`, 
+                data,
+                novaQuantidade: itemExistente.quantidade - 1
+            });
+        } else {
+            // Se possui apenas 1 unidade, exclui o registro completamente da tabela inventario
+            const { error } = await supabase
+                .from('inventario')
+                .delete()
+                .eq('id', itemExistente.id);
+
+            if (error) throw error;
+            return res.status(200).json({ 
+                message: 'Figurinha removida do seu álbum com sucesso!',
+                novaQuantidade: 0
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao remover figurinha:', error);
+        res.status(500).json({ error: error.message });
+    }
+};

@@ -43,3 +43,8 @@ app.get('/api/trocas/mercado', verificarToken, listarMercadoDeTrocas);
 app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando perfeitamente na porta ${PORT}`);
 });
+// Adicione esta linha junto com as outras rotas de produtos
+import { listarProdutosOficiais, obterMeuAlbum, adicionarProdutoAoAlbum, removerProdutoDoAlbum } from './controllers/productController.js';
+
+// E adicione esta rota
+app.post('/api/meu-album/remover', verificarToken, removerProdutoDoAlbum);

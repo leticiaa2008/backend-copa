@@ -83,46 +83,4 @@ export const adicionarProdutoAoAlbum = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-// Remover um produto (desmarcar figurinha) do inventário do usuário
-export const removerProdutoDoAlbum = async (req, res) => {
-    const usuarioId = req.usuario.id;
-    const { produtoId } = req.body;
 
-    if (!produtoId) {
-        return res.status(400).json({ error: 'ID do produto não fornecido.' });
-    }
-
-    try {
-        const { data: itemExistente } = await supabase
-            .from('inventario')
-            .select('*')
-            .eq('usuario_id', usuarioId)
-            .eq('produto_id', produtoId)
-            .single();
-
-        if (!itemExistente) {
-            return res.status(404).json({ error: 'Você não possui essa figurinha no seu inventário.' });
-        }
-
-        if (itemExistente.quantidade > 1) {
-            const { data, error } = await supabase
-                .from('inventario')
-                .update({ quantidade: itemExistente.quantidade - 1 })
-                .eq('id', itemExistente.id)
-                .select();
-            
-            if (error) throw error;
-            return res.status(200).json({ message: `Agora você tem ${itemExistente.quantidade - 1} unidade(s) desta figurinha!`, data });
-        } else {
-            const { error } = await supabase
-                .from('inventario')
-                .delete()
-                .eq('id', itemExistente.id);
-
-            if (error) throw error;
-            return res.status(200).json({ message: 'Figurinha removida do seu álbum com sucesso!' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
